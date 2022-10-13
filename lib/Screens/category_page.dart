@@ -17,7 +17,7 @@ class _CategoryPageState extends State<CategoryPage> with SingleTickerProviderSt
   @override
   void initState() {
     _tabController = TabController(vsync: this, length: 2);
-    CategoryDb().refreshUi();
+    // CategoryDb().refreshUi();
     super.initState();
   }
 

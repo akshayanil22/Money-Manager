@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/Db/category_db.dart';
+import 'package:money_manager/Db/transaction_db.dart';
 import 'package:money_manager/Screens/add_transactions.dart';
 import 'package:money_manager/Screens/category_page.dart';
 import 'package:money_manager/Screens/transactions_page.dart';
@@ -16,6 +17,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   ValueNotifier<CategoryType> groupValue = ValueNotifier(CategoryType.income);
   final TextEditingController _categoryNameController = TextEditingController();
+
+  @override
+  void initState() {
+    CategoryDb().refreshUi();
+    TransactionDb().refreshUi();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
