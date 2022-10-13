@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/Db/category_db.dart';
 import 'package:money_manager/Screens/add_transactions.dart';
 import 'package:money_manager/Screens/category_page.dart';
 import 'package:money_manager/Screens/transactions_page.dart';
+import 'package:money_manager/model/category_model.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -12,7 +14,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  ValueNotifier<String> groupValue = ValueNotifier('Income');
+  ValueNotifier<CategoryType> groupValue = ValueNotifier(CategoryType.income);
+  final TextEditingController _categoryNameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_selectedIndex == 0) {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddTransactions(),));
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AddTransactions(),
+            ));
           } else {
             addCategory();
           }
@@ -52,8 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
-  void addCategory(){
+  void addCategory() {
+    _categoryNameController.clear();
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -68,31 +73,32 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               const Text(
                 'Add Category',
-                style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 10,
               ),
               TextField(
+                controller: _categoryNameController,
                 decoration: InputDecoration(
                     hintText: 'Category Name',
                     contentPadding: const EdgeInsets.all(15),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15))),
-              ),const SizedBox(
+              ),
+              const SizedBox(
                 height: 10,
               ),
               ValueListenableBuilder(
                   valueListenable: groupValue,
-                  builder: (context,data,_) {
+                  builder: (context, data, _) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             Radio(
-                              value: 'Income',
+                              value: CategoryType.income,
                               groupValue: data,
                               onChanged: (value) {
                                 groupValue.value = value!;
@@ -104,10 +110,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         Row(
                           children: [
                             Radio(
-                              value: 'Expense',
+                              value: CategoryType.expense,
                               groupValue: data,
                               onChanged: (value) {
-                                  groupValue.value = value!;
+                                groupValue.value = value!;
                               },
                             ),
                             Text('Expense'),
@@ -115,13 +121,19 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                     );
-                  }
-              ),
+                  }),
               const SizedBox(
                 height: 10,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  CategoryDb()
+                      .insertCategory(CategoryModel(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          name: _categoryNameController.text,
+                          type: groupValue.value))
+                      .then((value) => Navigator.pop(context));
+                },
                 child: const Text('Submit'),
               ),
             ],
@@ -130,6 +142,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
 }
-

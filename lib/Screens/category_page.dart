@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/Db/category_db.dart';
 
 import 'expense_screen.dart';
 import 'income_screen.dart';
@@ -15,8 +16,9 @@ class _CategoryPageState extends State<CategoryPage> with SingleTickerProviderSt
 
   @override
   void initState() {
-    super.initState();
     _tabController = TabController(vsync: this, length: 2);
+    CategoryDb().refreshUi();
+    super.initState();
   }
 
   @override
